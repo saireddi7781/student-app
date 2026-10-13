@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        input { margin-right: 10px; padding: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>Student Management System</h2>
+    
+    <form id="studentForm">
+        <input type="text" id="studId" placeholder="Student ID" required>
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="text" id="course" placeholder="Course" required>
+        <input type="number" id="marks" placeholder="Marks" required>
+        <button type="submit">Add Student</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Marks</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="studentTableBody"></tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", loadStudents);
+        document.getElementById("studentForm").addEventListener("submit", addStudent);
+
+        function getStudents() {
+            return JSON.parse(localStorage.getItem("students")) || [];
+        }
+
+        function saveStudents(students) {
+            localStorage.setItem("students", JSON.stringify(students));
+        }
+
+        function loadStudents() {
+            const tbody = document.getElementById("studentTableBody");
+            tbody.innerHTML = "";
+            getStudents().forEach((s, index) => {
+                tbody.innerHTML += `<tr>
+                    <td>${s.id}</td>
+                    <td>${s.name}</td>
+                    <td>${s.course}</td>
+                    <td>${s.marks}</td>
+                    <td><button onclick="deleteStudent(${index})">Delete</button></td>
+                </tr>`;
+            });
+        }
+
+        function addStudent(e) {
+            e.preventDefault();
+            const student = {
+                id: document.getElementById("studId").value,
+                name: document.getElementById("name").value,
+                course: document.getElementById("course").value,
+                marks: document.getElementById("marks").value
+            };
+            const students = getStudents();
+            students.push(student);
+            saveStudents(students);
+            loadStudents();
+            document.getElementById("studentForm").reset();
+        }
+
+        function deleteStudent(index) {
+            const students = getStudents();
+            students.splice(index, 1);
+            saveStudents(students);
+            loadStudents();
+        }
+    </script>
+</body>
+</html>
